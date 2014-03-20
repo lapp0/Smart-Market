@@ -39,9 +39,9 @@ The distributed WoT will have both private and public ratings. Private ratings o
 An example of a centralized WoT rating system can be found here: http://bitcoin-otc.com/viewratings.php
 
 The trust ratings size will be minimal, following the format:
-
-{Rated user key (32 bytes), Rating user key (32 bytes), Rating (1 byte), Signature(72 bytes)}
-
+```
+Rated user key (32 bytes), Rating user key (32 bytes), Rating (1 byte), Signature(72 bytes)
+```
 Each rating will be a little over 100bytes. At a rate of 7 ratings per kb, there can be "only" 7 million ratings per GB. This doesn't scale to the trade volume of major auctioning and sales websites. Completely distributed ratings (everyone having a full copy) are fine for V0.1, but eventually there will have to be a more scalable model that doesn't require every running client have a full copy.
 
 There will be a default heuristic for getting a users trust based on your trust ratings, but it will be changeable. For example, some users might place a lot of trust in the ratings of those they trust, while others may think trust is less transitive. Users having different heuristics brings up issues with finding mutually agreeable mediators (you don't know who they trust), but there are many solutions. Assuming everyone has the same heuristic is sufficient for V0.1 though.
@@ -66,8 +66,9 @@ Unlike ratings, listings are not permenant. There probably more ratings than lis
 Listings themselves will not be propogated, only the title and information used to get the rest of the listing will be. This is to prevent DoS.
 
 The listing metadata will be formatted in this way:
-{Sellers ECDSA Key (32 bytes), Title (up to 64 bytes), Timestamp (8 bytes), Category (4 bytes)}
-
+```
+Sellers ECDSA Key (32 bytes), Title (up to 64 bytes), Timestamp (8 bytes), Category (4 bytes)
+```
 Based on the listings data, a listing can be requested from one of the hosts. Listings themselves can contain text and/or an image. To prevent DoS attacks against the hosts, they will request either a proof of work (hashcash) or proof of stake (proof of ownership of Bitcoins).
 
 ### Hosting
@@ -93,4 +94,17 @@ The proof of work will be the same as Bitmessages (SHA512) for V0.1.
 Client Operation
 ================
 
-(General Client Workings Here)
+Upon opening the client, it will connect to the network, download any ratings and listings it has missed.
+
+After connecting, the client is able to
+* As a buyer, view and open listings
+* As a merchant, update a listing you own, or add a new listing
+* As a mediator, run any audits or settle any disputes
+
+### Connection and Downloading
+
+### Working as a Buyer
+
+### Working as a Merchant
+
+### Working as a Mediator

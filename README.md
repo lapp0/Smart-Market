@@ -71,7 +71,7 @@ Listings themselves will not be propogated, only the title and information used 
 
 The listing metadata will be formatted in this way:
 ```
-Sellers ECDSA Key (32 bytes), Title (up to 64 bytes), Timestamp (8 bytes), Category (4 bytes), Nonce (1-8+ bytes)
+Sellers ECDSA Key (32 bytes), Title (up to 64 bytes), Timestamp (8 bytes), Category (4 bytes), Signature (72 bytes), Nonce (1-8+ bytes)
 ```
 Based on the listings data, a listing can be requested from one of the hosts. Listings themselves can contain text and/or an image. To prevent DoS attacks against the hosts, they will request either a proof of work (hashcash) or proof of stake (proof of ownership of Bitcoins).
 
@@ -80,7 +80,12 @@ A host is someone who decides to host listings for the network (and after V0.2 p
 
 A "proof of data transfer" is impossible without risking a sybil attack. This means it is up to the merchant to audit them and notify the mediators if they are cheating or not providing sufficient service.
 
-For V0.1, broadcasters will send directly to those that request data. In a future version, the data will be routed through a circuit formed in the network.
+For V0.1, broadcasters will send directly to those that request data. In a future version, the data will be routed through a circuit formed in the network. The hosts will broadcast a connection information message which will be IP based for V0.1:
+```
+Hosts ECDSA KEY (32 bytes), IPv6:Port (18 bytes), Signature (72 bytes)
+```
+
+The hosts will also broadcast a message with the listings associated with their ECDSA key so users can know to connect to them when they have a listing they want to view.
 
 ### Private Messaging
 In V0.1, a Bitmessage-like network (or Bitmessage itself) will be used for private messaging.
@@ -122,7 +127,7 @@ list listItems(4bytes category, string search, file listings)
 
 Categories are predefined by the user and the program. The program will come pre-configured with categories associated with codes (0x00000000=hosting, 0x00000001=mediating, 0x00000003=some-primary-category). The community will be able to define their own category codes and if they're used enough, the networking effect will bring a soft-consensus for what each category means. The soft consensus will include a template allowing compressed listings (eg. hosting template is upspeed byte, uptime byte, required proof of work, etc. This is most space effecient than a listing saying "My uptime is 95% and my upspeed is 1mb/s").
 
-When requesting a listing, the host may require a (cheap) proof of work.
+When requesting a listing, the host may require a (cheap) proof of work. The user will lookup the hosts that are associated with that listing, then they will lookup the current IP:Port of that host and request that specific listing.
 
 ### Working as a Merchant
 The merchants actions will be creating and modifying listings along with replying to messages.
@@ -131,7 +136,7 @@ Creating a listing will involve creating the listing structure with your public 
 
 Modifying a listing involves revoking your previous listing with a revokation message:
 ```
-previous listing hash (64 bytes), signature (72 bytes)
+previous listing (109-120+ bytes), signature (72 bytes)
 ```
 and adding a new listing to replace it.
 
@@ -149,15 +154,15 @@ Automated tasks include running a script (eg. verifying a host isn't cheating) o
 
 Manual tasks include acting as an oracle and answering questions like "did this person probably receive their product" or "did this event happen".
 
+Along with that, they act as merchants and view requests for their services including working with contracts.
+
 Questions and Stuff to Add
 ==========================
 
-Is soft-distributing all these listings and ratings a good idea? Should they be contained in a blockchain instead? It would allow the network target to be better defined.
-
-Must expand on ECDSA malleability issue for listing revokation and the solution.
-
-Must expand on dealing with connecting to hosts.
-
-Mention that each message (listing, rating, listing revokation) will have their type in the inv_vector as it is with the Bitcoin node communication.
+Is soft-distributing all these listings and ratings a good idea? Should they be contained in a blockchain instead? It would allow the network difficulty target to be better defined.
 
 What is a better name for this?
+
+Possible way to make revokations more space effecient
+
+Mention that each message (listing, rating, listing revokation) will have their type in the inv_vector as it is with the Bitcoin node communication.

@@ -152,10 +152,12 @@ Manual tasks include acting as an oracle and answering questions like "did this 
 Questions and Stuff to Add
 ==========================
 
-Is soft-moving all these listings and ratings a good idea? Should they be contained in a blockchain instead? It would allow the network target to be better defined.
+Is soft-distributing all these listings and ratings a good idea? Should they be contained in a blockchain instead? It would allow the network target to be better defined.
 
 Must expand on ECDSA malleability issue for listing revokation and the solution.
 
 Must expand on dealing with connecting to hosts.
 
-Each message (listing, rating, listing revokation) will need a few bits to identify what type of message it is.
+Mention that each message (listing, rating, listing revokation) will have their type in the inv_vector as it is with the Bitcoin node communication.
+
+What is a better name for this?

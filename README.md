@@ -118,7 +118,7 @@ Downloading/Communication: https://en.bitcoin.it/wiki/Network#Standard_relaying
 Buyers are able to search for items by title and category.
 
 ```
-list listItems(4bytes category, string search, file listings)
+list listItems(size_4 category, string search, file listings)
   list items = listing in listings where categoryByte is category and listing.title contains search
   for each item in items
     item.rating = findRating(item.sellerKey)

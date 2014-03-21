@@ -28,6 +28,7 @@ Use Cases
 =========
 
 * Marketplace with agreed upon mediators
+* Distributed exchange
 
 ### Potential Future Use Cases
 * Static hosting services
@@ -119,7 +120,9 @@ list listItems(4bytes category, string search, file listings)
   return items
 ```
 
-Categories are predefined by the user and the program. The program will come pre-configured with categories associated with codes (0x00000000=hosting, 0x00000001=mediating, 0x00000003=some-primary-category). The community will be able to define their own category codes and if they're used enough, the networking effect will bring a soft-consensus for what each category means.
+Categories are predefined by the user and the program. The program will come pre-configured with categories associated with codes (0x00000000=hosting, 0x00000001=mediating, 0x00000003=some-primary-category). The community will be able to define their own category codes and if they're used enough, the networking effect will bring a soft-consensus for what each category means. The soft consensus will include a template allowing compressed listings (eg. hosting template is upspeed byte, uptime byte, required proof of work, etc. This is most space effecient than a listing saying "My uptime is 95% and my upspeed is 1mb/s").
+
+When requesting a listing, the host may require a (cheap) proof of work.
 
 ### Working as a Merchant
 The merchants actions will be creating and modifying listings along with replying to messages.
@@ -134,11 +137,25 @@ and adding a new listing to replace it.
 
 #### Working as a host (who is a merchant for hostings)
 
+A host will need to define parameters for the quality of their service. Each of these qualities must be auditable by mediators.
+
+Hosting will be integrated with the programm meaning any legitemate listing requests will be fufilled automatically.
+
 ### Working as a Mediator
+
+Mediators will have both manual and automatic tasks.
+
+Automated tasks include running a script (eg. verifying a host isn't cheating) or another arbitrary script (after V0.1) when an event happens (it is a certain date, or a host auditing request is sent).
+
+Manual tasks include acting as an oracle and answering questions like "did this person probably receive their product" or "did this event happen".
 
 Questions and Stuff to Add
 ==========================
 
 Is soft-moving all these listings and ratings a good idea? Should they be contained in a blockchain instead? It would allow the network target to be better defined.
+
+Must expand on ECDSA malleability issue for listing revokation and the solution.
+
+Must expand on dealing with connecting to hosts.
 
 Each message (listing, rating, listing revokation) will need a few bits to identify what type of message it is.

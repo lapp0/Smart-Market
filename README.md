@@ -22,7 +22,7 @@ Once the following features are complete, Smart Market will be on V0.1:
 * Web of trust search to find mutually agreeable mediators
 * Propogation of listing metadata
 * Decentralized hosting of actual listings
-* Private messaging
+* Private Messaging
 
 Use Cases
 =========
@@ -44,7 +44,7 @@ As this project is built, I may find it is safer to implement certain features i
 ### Distributed Web of Trust (WoT)
 The distributed WoT will have both private and public ratings. Private ratings only effect how your web of trust acts locally, while public ratings are broadcasted and used by others to determine trust.
 
-An example of a centralized WoT rating system can be found here: http://bitcoin-otc.com/viewratings.php
+[An example of a centralized WoT rating system](http://bitcoin-otc.com/viewratings.php)
 
 The trust ratings size will be minimal, following the format:
 ```
@@ -88,9 +88,7 @@ Hosts ECDSA KEY (32 bytes), IPv6:Port (18 bytes), Signature (72 bytes)
 The hosts will also broadcast a message with the listings associated with their ECDSA key so users can know to connect to them when they have a listing they want to view.
 
 ### Private Messaging
-In V0.1, a Bitmessage-like network (or Bitmessage itself) will be used for private messaging.
-
-A future version may include the option to let users have PM accounts with hosters. The problems this brings up are difficulty auditing, problems with centralization and reduced anonymity. For these reasons Bitmessage may be the better solution.
+For V0.1, the client will simply give you someones Bitmessage address based on a public key you enter.
 
 ### Broadcasting
 To prevent DoS and malicious users flooding each users harddrive, there will have to be something throttling those spammers. Whenever a rating is made, is will have to have a proof of work associated with it. Another method of throttling spam ratings is not relaying ratings made by those you don't trust, however only the proof of work will be part of V0.1.
@@ -110,9 +108,9 @@ After connecting, the client is able to
 ### Connection and Downloading
 Because of the nature of the data in this network (everyone gets a copy and it is distributed), the network joining, topology and downloading will mostly copied from Bitcoin.
 
-Joining: https://en.bitcoin.it/wiki/Satoshi_Client_Node_Discovery
+[Bitcoin joining](https://en.bitcoin.it/wiki/Satoshi_Client_Node_Discovery)
 
-Downloading/Communication: https://en.bitcoin.it/wiki/Network#Standard_relaying
+[Bitcoin downloading/Communication](https://en.bitcoin.it/wiki/Network#Standard_relaying)
 
 ### Working as a Buyer
 Buyers are able to search for items by title and category.
@@ -156,6 +154,38 @@ Manual tasks include acting as an oracle and answering questions like "did this 
 
 Along with that, they act as merchants and view requests for their services including working with contracts.
 
+Planned Features for V0.2
+=========================
+
+Some features aren't needed for a complete marketplace, but are desired. These features must be implemented for this project to be considered on V0.2
+
+### Private Messaging
+By V0.2, a Bitmessage-like network (or an integrated Bitmessage itself) will be used for private messaging.
+
+A future version may include the option to let users have PM accounts with hosters. The problems this brings up are difficulty auditing, problems with centralization and reduced anonymity. For these reasons Bitmessage may be the better solution.
+
+Possible Future Features
+========================
+
+These features may not be necessary or possible and will be marked as such.
+
+### Account Throw-Away Value (If necessary)
+The WoT can determine how trustworthy a person has been in previous transaction, but if the merchants orders are valued higher than their WoT and future earnings, then it is more profitable to scam their customers than continue operating.
+
+To determine throw away value, a buyer must estimate the value of their WoT (estimated based on their trust-value) and subtract that from their throwaway value, which should be calculated by the client as the sum of all current open orders.
+
+Letting users know your throwaway value will by opt-in because using this scheme (perhaps there is a better one such as a modified version of [gmaxwells proof of reserves](https://iwilcox.me.uk/2014/proving-bitcoin-reserves)) will let everyone know how many orders you have and the value of each.
+
+In this scheme, you simply set an expiration date (when you should have the order by), an amount in btc
+
+### Proof of Stake (If possible)
+
+Proof of work is not ideal because those running specialized hardware (or even GPUs) may be able to spam the network. The proof of stake implementations details will be expanded here.
+
+Proof of Stake requires users run a Bitcoin client (an SPV client works though).
+
+### To be continued
+
 Questions and Stuff to Add
 ==========================
 
@@ -166,3 +196,4 @@ What is a better name for this?
 Possible way to make revokations more space effecient
 
 Mention that each message (listing, rating, listing revokation) will have their type in the inv_vector as it is with the Bitcoin node communication.
+

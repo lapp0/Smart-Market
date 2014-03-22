@@ -167,7 +167,7 @@ Proof of work is not ideal because those running specialized hardware (or even G
 
 Proof of Stake requires users run a Bitcoin client (an SPV client works though).
 
-### To be continues
+### To be continued
 
 Possible Future Features
 ========================

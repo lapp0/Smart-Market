@@ -1,12 +1,7 @@
 Smart-Market
 ============
 
-Decentralized marketplace that automatically evaluates your level of trust for merchants based on a web of trust.
-
-Running Smart Market
-====================
-
-Documentation and downloads will be here.
+Decentralized marketplace that automatically evaluates your level of trust for merchants based on a web of trust. Smart-Market has no central point of control, but it does have an agenda (facilitate trade), and protocol (defined below), therefore it can be considered a distributed autonomous corporation.
 
 Motivation
 ==========
@@ -112,6 +107,8 @@ Because of the nature of the data in this network (everyone gets a copy and it i
 
 [Bitcoin downloading/Communication](https://en.bitcoin.it/wiki/Network#Standard_relaying)
 
+Once you have joined the network, you will be able to broadcast objects (ratings, listings, listing revokations, etc) and relay objects.
+
 ### Working as a Buyer
 Buyers are able to search for items by title and category.
 
@@ -164,6 +161,14 @@ By V0.2, a Bitmessage-like network (or an integrated Bitmessage itself) will be 
 
 A future version may include the option to let users have PM accounts with hosters. The problems this brings up are difficulty auditing, problems with centralization and reduced anonymity. For these reasons Bitmessage may be the better solution.
 
+### Proof of Stake
+
+Proof of work is not ideal because those running specialized hardware (or even GPUs) may be able to spam the network. The proof of stake implementations details will be expanded here.
+
+Proof of Stake requires users run a Bitcoin client (an SPV client works though).
+
+### To be continues
+
 Possible Future Features
 ========================
 
@@ -178,12 +183,6 @@ Letting users know your throwaway value will by opt-in because using this scheme
 
 In this scheme, you simply set an expiration date (when you should have the order by), an amount in btc
 
-### Proof of Stake (If possible)
-
-Proof of work is not ideal because those running specialized hardware (or even GPUs) may be able to spam the network. The proof of stake implementations details will be expanded here.
-
-Proof of Stake requires users run a Bitcoin client (an SPV client works though).
-
 ### To be continued
 
 Questions and Stuff to Add
@@ -194,6 +193,3 @@ Is soft-distributing all these listings and ratings a good idea? Should they be 
 What is a better name for this?
 
 Possible way to make revokations more space effecient
-
-Mention that each message (listing, rating, listing revokation) will have their type in the inv_vector as it is with the Bitcoin node communication.
-

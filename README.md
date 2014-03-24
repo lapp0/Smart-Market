@@ -170,22 +170,48 @@ Planned Features for V0.2
 
 Some features aren't needed for a complete marketplace, but are desired. These features must be implemented for this project to be considered on V0.2
 
-### Private Messaging
-By V0.2, a Bitmessage-like network (or an integrated Bitmessage itself) will be used for private messaging.
+### Proof of Stake (PoS)
 
-A future version may include the option to let users have PM accounts with hosts. The problems this brings up are difficulty auditing, problems with centralization and reduced anonymity. For these reasons Bitmessage may be the better solution.
+Proof of work is not ideal because those running specialized hardware (or even GPUs) may be able to spam the network.
 
-### Proof of Stake
+Along with solving the spamming problem, PoS may make it easy to prove your network is being jammed. I am researching this right now.
 
-Proof of work is not ideal because those running specialized hardware (or even GPUs) may be able to spam the network. The proof of stake implementations details will be expanded here.
+PoS will be the most important feature in V0.2 because it could solve the two most critical (known) vulnerabilites to the system: spamming using specialized hardware for generating SHA512 hashes and possibly a sybil attack to jam the network (these are the same vulnerabilities found in Bitmessage).
+
+The proof of stake implementations details will be expanded here.
 
 Proof of Stake requires users run a Bitcoin client (an SPV client works though).
+
+### Private Messaging
+By V0.2, an integrated PoS-based Bitmessage-like network will be used for private messaging.
+
+A future version may include the option to let users have PM accounts with hosts. The problems this brings up are difficulty auditing, problems with centralization and reduced anonymity.
 
 ### Static Web Hosting
 
 It is possible to have the mediators verify web hosting as well. The contract involves the mediator downloading the file at predetermined times and verifying that the hash of the file is the same as it was originally.
 
 This is both useful and easy to integrate.
+
+### Account Throw-Away Value (If necessary)
+The WoT can determine how trustworthy a person has been in previous transaction, but if the merchants orders are valued higher than their WoT and future earnings and they aren't using a mediataor, then it is more profitable to scam their customers than continue operating.
+
+To determine throw away value, a buyer must estimate the value of their WoT (estimated based on their trust-value) and subtract that from their throwaway value, which should be calculated by the client as the sum of all current open orders.
+
+Letting users know your throwaway value will by opt-in because using this scheme (perhaps there is a better one such as a modified version of [gmaxwells proof of reserves](https://iwilcox.me.uk/2014/proving-bitcoin-reserves)) will let everyone know how many orders you have and the value of each.
+
+If the merchant isn't using a mediator and is requiring you to send funds directly to them, then it is a good idea to check their [counterparty risk](https://en.wikipedia.org/wiki/Counterparty_risk#Counterparty_risk). If they have a significant amount of unpaid debt (incomplete sales), then a user may want to avoid them. Publicizing the their throw-away value is the merchants decision. If they aren't publicizing their their throw-away value, then they should broadcast a message stating they aren't publicizing their throw-away value. If a buyer comes across a merchant that isn't agreeing to add your sale to their throw-away value and they haven't broadcasted a message saying they're not publicizing, then they may be hiding the fact that they have a large counterparty risk and they probably should be avoided.
+
+Throw-away value messages are deleted from each users database if there is either rating for the merchant from after the sale time, or if the sale has expired. The throw-away messages will be formatted like:
+```
+Merchant Key (32 bytes), Buyer Key (32 bytes), Current Timestamp (8 bytes),
+Expiration Timestamp (8 bytes), Risked BTC (7 bytes), Merchant Signature (72 bytes), Nonce (1-8+ bytes)
+```
+
+Not broadcasting throw-away value messageL
+```
+Merchant Key (32 bytes), "Not Broadcasting Byte" (1 byte), Merchant Signature (72 bytes), Nonce (1-8+ bytes)
+```
 
 ### To be continued
 
@@ -194,14 +220,9 @@ Possible Future Features
 
 These features may not be necessary or possible and will be marked as such.
 
-### Account Throw-Away Value (If necessary)
-The WoT can determine how trustworthy a person has been in previous transaction, but if the merchants orders are valued higher than their WoT and future earnings, then it is more profitable to scam their customers than continue operating.
+### Message Splitting Scaling Scheme
 
-To determine throw away value, a buyer must estimate the value of their WoT (estimated based on their trust-value) and subtract that from their throwaway value, which should be calculated by the client as the sum of all current open orders.
-
-Letting users know your throwaway value will by opt-in because using this scheme (perhaps there is a better one such as a modified version of [gmaxwells proof of reserves](https://iwilcox.me.uk/2014/proving-bitcoin-reserves)) will let everyone know how many orders you have and the value of each.
-
-In this scheme, you simply set an expiration date (when you should have the order by), an amount in btc
+As mentioned above, to scale, this program will need to split the messages. This must be done carefully because 
 
 ### To be continued
 

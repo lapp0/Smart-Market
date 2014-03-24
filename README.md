@@ -15,7 +15,7 @@ Once the following features are complete, Smart Market will be on V0.1:
 * Distributed web of trust
 * Web of trust search to find high rated merchant
 * Web of trust search to find mutually agreeable mediators
-* Propogation of listing metadata
+* Propagation of listing metadata
 * Decentralized hosting of actual listings
 * Private Messaging (associated Bitmessage account, not integrated)
 
@@ -41,7 +41,8 @@ The distributed WoT will have both private and public ratings. Private ratings o
 
 The trust ratings size will be minimal, following the format:
 ```
-Rated user key (32 bytes), Rating user key (32 bytes), Rating (2 byte), Timestamp (8 bytes), Signature (72 bytes), Nonce (1-8+ bytes)
+Rated user key (32 bytes), Rating user key (32 bytes), Rating (2 byte),
+Timestamp (8 bytes), Signature (72 bytes), Nonce (1-8+ bytes)
 ```
 Each rating will be a little over 100bytes. At a rate of 7 ratings per kb, there can be "only" 7 million ratings per GB. This doesn't scale to the trade volume of major auctioning and sales websites. Completely distributed ratings (everyone having a full copy) are fine for V0.1, but eventually there will have to be a more scalable model that doesn't require every running client have a full copy.
 
@@ -49,9 +50,9 @@ There will be a default heuristic for getting a users trust based on your trust 
 
 The default heuristic for V0.1 will be borrowed from bitcoin-otc. From each key, users will be able to determine first level trust (what they rated them), second level trust (what those they have first level trust for rated them) and so on. You only can have second level trust in Alice to the extent that your trust Bob (the person who rated Alice). For example, if your trust-level for Bob is 4 and his trust level trust for Alice is 7, then only 4 second level trust points will be added to Alices second level trust rating.
 
-The format for a trust rating is defined to enable easy indexing. The first two fields, "Rated user key" and "Rating user key" allow your client to search the WoT for "Rating user"s that you have trust for and find the next level of trust from them. The rating bytes allow you to give a rating from -7 to 8 (first 4 bits) and a reason associated with some number between 0 and 2^12 - 1 that is hardcoded in the client (eg. late delivery, perfect, many perfect transactions) as the next 12 bits. The timestamp is to make sure it is the most recent rating (next paragraph) and the signature is assocated with the "Rating user key" and verifies that the rating was based by the rating users. Finally, the rating is hashed and if the hash of it is less than the target hash, it can be relayed by the network, otherwise the nonce is incremented and it is hashed again.
+The format for a trust rating is defined to enable easy indexing. The first two fields, "Rated user key" and "Rating user key" allow your client to search the WoT for "Rating user"s that you have trust for and find the next level of trust from them. The rating bytes allow you to give a rating from -7 to 8 (first 4 bits) and a reason associated with some number between 0 and 2^12 - 1 that is hard coded in the client (eg. late delivery, perfect, many perfect transactions) as the next 12 bits. The timestamp is to make sure it is the most recent rating (next paragraph) and the signature is associated with the "Rating user key" and verifies that the rating was based by the rating users. Finally, the rating is hashed and if the hash of it is less than the target hash, it can be relayed by the network, otherwise the nonce is incremented and it is hashed again.
 
-If a new rating comes along and it's first 64 bytes are already used in your WoT AND the timestamp is from a later time than the old rating (and the signature is valid and its hash is below the target), then it replaces the old rating in your WoT and is propogated. 
+If a new rating comes along and it's first 64 bytes are already used in your WoT AND the timestamp is from a later time than the old rating (and the signature is valid and its hash is below the target), then it replaces the old rating in your WoT and is propagated. 
 
 There are DoS problems with this (eg. a user rating everyone in the network or a bunch of faux users), but they will be covered in the Broadcasting section.
 
@@ -63,10 +64,10 @@ Find an agreed upon mediator, or set of mediators using the WoT. Bitcoin scripts
 
 For example, Bob could decide to sell me a TV. We might find 5 mediators we trust and require a 3/5ths vote. If Bob and I agree (he got paid and I got my TV) we both sign a transaction paying him. If we don't agree and he has a stronger case according to 3/5ths of the mediators, Bob and 3/5ths of the mediators will sign a transaction paying him. If I have a stronger case, 3/5th of the mediators and I will sign a transaction paying to myself and I will receive a refund.
 
-### Listing Propogation
-Unlike ratings, listings are not permenant. There probably will be more ratings than listings stored at a given time because of this. For V0.1 everyone will have every listing, but for scaling purposes, the same scaling scheme used for ratings will probably be used.
+### Listing Propagation
+Unlike ratings, listings are not permanent. There probably will be more ratings than listings stored at a given time because of this. For V0.1 everyone will have every listing, but for scaling purposes, the same scaling scheme used for ratings will probably be used.
 
-Listings themselves will not be propogated, only the title and information used to get the rest of the listing will be. This is to prevent DoS.
+Listings themselves will not be propagated, only the title and information used to get the rest of the listing will be. This is to prevent DoS.
 
 The listing metadata will be formatted in this way:
 ```
@@ -79,7 +80,7 @@ The Sellers key will be used to lookup their trust-rating. The Title will be use
 Based on the listings data, a listing can be requested from one of the hosts. Listings themselves can contain text and/or an image. To prevent DoS attacks against the hosts, they will request either a proof of work (hashcash) (V0.1) or proof of stake (proof of ownership of Bitcoins) (V0.2).
 
 ### Hosting
-A host is someone who decides to host listings for the network (and in V0.2 possibly do static web hosting). They are paid for their services by merchants, meaning the merchants are customers for hostings and the hosts are merchants who sell hosting.
+A host is someone who decides to host listings for the network (and in V0.2 possibly do static web hosting). They are paid for their services by merchants, meaning the merchants are customers for hosting and the hosts are merchants who sell hosting.
 
 A "proof of data transfer" is impossible without risking a sybil attack. This means it is up to the merchant to verify the hosts are hosting them and notify the mediators if they are cheating or not providing sufficient service.
 
@@ -88,7 +89,7 @@ For V0.1, broadcasters will send directly to those that request data. In a futur
 Hosts ECDSA KEY (32 bytes), IPv6 Address:Port (18 bytes), Timestamp (8 bytes), Signature (72 bytes), Nonce (1-8+ bytes)
 ```
 
-The hosts will also brroadcast a message with the listings associated with their ECDSA key so users can know to connect to them when they have a listing they want to view:
+The hosts will also broadcast a message with the listings associated with their ECDSA key so users can know to connect to them when they have a listing they want to view:
 ```
 Hosts ECDSA KEY (32 bytes), Listing ID (?? bytes), Timestamp (8 bytes), Signature (72 bytes), Nonce (1-8+ bytes)
 ```
@@ -99,7 +100,7 @@ Like in the other objects, the timestamps are used for revoking and updating.
 For V0.1, the client will simply give you someones Bitmessage address based on a public key you enter.
 
 ### Broadcasting
-To prevent DoS and malicious users flooding each users harddrive, there will have to be something throttling those spammers. Whenever a rating is made, is will have to have a proof of work associated with it. Another method of throttling spam ratings is not relaying ratings made by those you don't trust, however only the proof of work will be part of V0.1.
+To prevent DoS and malicious users flooding each users hard drive, there will have to be something throttling those spammers. Whenever a rating is made, is will have to have a proof of work associated with it. Another method of throttling spam ratings is not relaying ratings made by those you don't trust, however only the proof of work will be part of V0.1.
 
 The proof of work will be the same as Bitmessages (SHA512) for V0.1.
 
@@ -120,7 +121,7 @@ Because of the nature of the data in this network (everyone gets a copy and it i
 
 [Bitcoin downloading/Communication](https://en.bitcoin.it/wiki/Network#Standard_relaying)
 
-Once you have joined the network, you will be able to broadcast objects (ratings, listings, listing revokations, etc) and relay objects.
+Once you have joined the network, you will be able to broadcast objects (ratings, listings, listing revocations, etc) and relay objects.
 
 ### Working as a Buyer
 Buyers are able to search for items by title and category.
@@ -133,26 +134,26 @@ list listItems(size_4 category, string search, file listings)
   return items
 ```
 
-Categories are predefined by the user and the program. The program will come pre-configured with categories associated with codes (0x00000000=hosting, 0x00000001=mediating, 0x00000003=some-primary-category). The community will be able to define their own category codes and if they're used enough, the networking effect will bring a soft-consensus for what each category means. The soft consensus will include a template allowing compressed listings (eg. hosting template is upspeed byte, uptime byte, required proof of work, etc. This is most space effecient than a listing saying "My uptime is 95% and my upspeed is 1mb/s").
+Categories are predefined by the user and the program. The program will come pre-configured with categories associated with codes (0x00000000=hosting, 0x00000001=mediating, 0x00000003=some-primary-category). The community will be able to define their own category codes and if they're used enough, the networking effect will bring a soft-consensus for what each category means. The soft consensus will include a template allowing compressed listings (eg. hosting template is upspeed byte, uptime byte, required proof of work, etc. This is more space efficient than a listing saying "My uptime is 95% and my upspeed is 1mb/s").
 
 When requesting a listing, the host may require a (cheap) proof of work. The user will lookup the hosts that are associated with that listing, then they will lookup the current IP:Port of that host and request that specific listing.
 
 ### Working as a Merchant
 The merchants actions will be creating and modifying listings along with replying to messages.
 
-Creating a listing will involve creating the listing structure with your public key, your title, the timestamp and the category byte. Then you complete a proof of work by finding a hash(listing structure, nonce) that is less than the network target. The hash is then stored for later revokation.
+Creating a listing will involve creating the listing structure with your public key, your title, the timestamp and the category byte. Then you complete a proof of work by finding a hash(listing structure, nonce) that is less than the network target. The hash is then stored for later revocation.
 
-Modifying a listing involves revoking your previous listing with a revokation message:
+Modifying a listing involves revoking your previous listing with a revocation message:
 ```
 previous listing (109-120+ bytes), signature (72 bytes)
 ```
 and adding a new listing to replace it.
 
-#### Working as a host (who is a merchant for hostings)
+#### Working as a host (being a merchant for hosting)
 
-A host will need to define parameters for the quality of their service. Each of these qualities must be auditable by mediators.
+A host will need to define parameters for the quality of their service. Each of these qualities must be audit-able by mediators.
 
-Hosting will be integrated with the programm meaning any legitemate listing requests will be fufilled automatically.
+Hosting will be integrated with the program meaning any legitimate listing requests will be fulfilled automatically.
 
 ### Working as a Mediator
 
@@ -172,7 +173,7 @@ Some features aren't needed for a complete marketplace, but are desired. These f
 ### Private Messaging
 By V0.2, a Bitmessage-like network (or an integrated Bitmessage itself) will be used for private messaging.
 
-A future version may include the option to let users have PM accounts with hosters. The problems this brings up are difficulty auditing, problems with centralization and reduced anonymity. For these reasons Bitmessage may be the better solution.
+A future version may include the option to let users have PM accounts with hosts. The problems this brings up are difficulty auditing, problems with centralization and reduced anonymity. For these reasons Bitmessage may be the better solution.
 
 ### Proof of Stake
 
@@ -182,7 +183,7 @@ Proof of Stake requires users run a Bitcoin client (an SPV client works though).
 
 ### Static Web Hosting
 
-It is possible to have the mediators verify web hosting as well. The contract involves the mediator downloading the file at pre-determined times and verifying that the hash of the file is the same as it was originally.
+It is possible to have the mediators verify web hosting as well. The contract involves the mediator downloading the file at predetermined times and verifying that the hash of the file is the same as it was originally.
 
 This is both useful and easy to integrate.
 
@@ -211,6 +212,6 @@ Is soft-distributing all these listings and ratings a good idea? Should they be 
 
 What is a better name for this?
 
-Possible way to make revokations more space effecient
+Possible way to make revocations more space efficient
 
-Determine the most space-effecient and safe way to have listing IDs referenced in the hosts "advertisment".
+Determine the most space-efficient and safe way to have listing IDs referenced in the hosts "advertisement".

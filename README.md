@@ -208,7 +208,7 @@ Merchant Key (32 bytes), Buyer Key (32 bytes), Current Timestamp (8 bytes),
 Expiration Timestamp (8 bytes), Risked BTC (7 bytes), Merchant Signature (72 bytes), Nonce (1-8+ bytes)
 ```
 
-Not broadcasting throw-away value messageL
+Not broadcasting throw-away value message:
 ```
 Merchant Key (32 bytes), "Not Broadcasting Byte" (1 byte), Merchant Signature (72 bytes), Nonce (1-8+ bytes)
 ```

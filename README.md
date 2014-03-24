@@ -6,7 +6,7 @@ Decentralized marketplace that automatically evaluates your level of trust for m
 Motivation
 ==========
 
-Bitcoins greatest accomplishment was removing trust from third parties and allowing people to hold and use money without a central authority. The goal of Smart Market is to remove the need for a central authority (eg. an auctioning website, or payment processor) along with having no down time and allow you to make "smart"-trades.
+Bitcoins greatest accomplishment was removing trust from third parties and allowing people to hold and use money without a central authority. The goal of Smart Market is to remove the need for a central authority (eg. an auctioning website, or payment processor) when trading while having no down time and to allow users to make "smart"-trades.
 
 Features
 ========
@@ -17,7 +17,7 @@ Once the following features are complete, Smart Market will be on V0.1:
 * Web of trust search to find mutually agreeable mediators
 * Propogation of listing metadata
 * Decentralized hosting of actual listings
-* Private Messaging
+* Private Messaging (associated Bitmessage account, not integrated)
 
 Use Cases
 =========
@@ -27,9 +27,7 @@ Use Cases
 
 ### Potential Future Use Cases
 * Static hosting services
-* Stock trading using some color coin or Freicoin
 * Coinjoining network
-* Anonymity network
 
 Design
 ======
@@ -43,16 +41,22 @@ The distributed WoT will have both private and public ratings. Private ratings o
 
 The trust ratings size will be minimal, following the format:
 ```
-Rated user key (32 bytes), Rating user key (32 bytes), Rating (1 byte), Signature (72 bytes), Nonce (1-8+ bytes)
+Rated user key (32 bytes), Rating user key (32 bytes), Rating (2 byte), Timestamp (8 bytes), Signature (72 bytes), Nonce (1-8+ bytes)
 ```
 Each rating will be a little over 100bytes. At a rate of 7 ratings per kb, there can be "only" 7 million ratings per GB. This doesn't scale to the trade volume of major auctioning and sales websites. Completely distributed ratings (everyone having a full copy) are fine for V0.1, but eventually there will have to be a more scalable model that doesn't require every running client have a full copy.
 
 There will be a default heuristic for getting a users trust based on your trust ratings, but it will be changeable. For example, some users might place a lot of trust in the ratings of those they trust, while others may think trust is less transitive. Users having different heuristics brings up issues with finding mutually agreeable mediators (you don't know who they trust), but there are many solutions. Assuming everyone has the same heuristic is sufficient for V0.1 though.
 
+The default heuristic for V0.1 will be borrowed from bitcoin-otc. From each key, users will be able to determine first level trust (what they rated them), second level trust (what those they have first level trust for rated them) and so on. You only can have second level trust in Alice to the extent that your trust Bob (the person who rated Alice). For example, if your trust-level for Bob is 4 and his trust level trust for Alice is 7, then only 4 second level trust points will be added to Alices second level trust rating.
+
+The format for a trust rating is defined to enable easy indexing. The first two fields, "Rated user key" and "Rating user key" allow your client to search the WoT for "Rating user"s that you have trust for and find the next level of trust from them. The rating bytes allow you to give a rating from -7 to 8 (first 4 bits) and a reason associated with some number between 0 and 2^12 - 1 that is hardcoded in the client (eg. late delivery, perfect, many perfect transactions) as the next 12 bits. The timestamp is to make sure it is the most recent rating (next paragraph) and the signature is assocated with the "Rating user key" and verifies that the rating was based by the rating users. Finally, the rating is hashed and if the hash of it is less than the target hash, it can be relayed by the network, otherwise the nonce is incremented and it is hashed again.
+
+If a new rating comes along and it's first 64 bytes are already used in your WoT AND the timestamp is from a later time than the old rating (and the signature is valid and its hash is below the target), then it replaces the old rating in your WoT and is propogated. 
+
 There are DoS problems with this (eg. a user rating everyone in the network or a bunch of faux users), but they will be covered in the Broadcasting section.
 
 ### Web of Trust Search
-Based on listings in a category you are interested in, your downloaded WoT will determine the trust-rating of each merchant in the list you are viewing. The time needed to rate will be determined by the heuristics algorithm.
+Based on listings in a category you are interested in, your downloaded WoT will determine your level one, level two ... level N (N defined by the user) trust for the merchant and display the listings based their trust-rating.
 
 ### Mutually Agreed Upon Mediators
 Find an agreed upon mediator, or set of mediators using the WoT. Bitcoin scripts allow for you to choose N mediators and have the transaction spent to an address determined by either you and the merchant together (both parties are happy) or M of those N mediators along with either a buyer or merchant (whoever the M mediators side with).
@@ -60,27 +64,36 @@ Find an agreed upon mediator, or set of mediators using the WoT. Bitcoin scripts
 For example, Bob could decide to sell me a TV. We might find 5 mediators we trust and require a 3/5ths vote. If Bob and I agree (he got paid and I got my TV) we both sign a transaction paying him. If we don't agree and he has a stronger case according to 3/5ths of the mediators, Bob and 3/5ths of the mediators will sign a transaction paying him. If I have a stronger case, 3/5th of the mediators and I will sign a transaction paying to myself and I will receive a refund.
 
 ### Listing Propogation
-Unlike ratings, listings are not permenant. There probably more ratings than listings stored at a given time because of this. For V0.1 everyone will have every listing, but for scaling purposes, the same scheme used for ratings will probably be used.
+Unlike ratings, listings are not permenant. There probably will be more ratings than listings stored at a given time because of this. For V0.1 everyone will have every listing, but for scaling purposes, the same scaling scheme used for ratings will probably be used.
 
 Listings themselves will not be propogated, only the title and information used to get the rest of the listing will be. This is to prevent DoS.
 
 The listing metadata will be formatted in this way:
 ```
-Sellers ECDSA Key (32 bytes), Title (up to 64 bytes), Timestamp (8 bytes), Category (4 bytes), Signature (72 bytes), Nonce (1-8+ bytes)
+Sellers ECDSA Key (32 bytes), Title (up to 64 bytes), Timestamp (8 bytes),
+Category (4 bytes), Signature (72 bytes), Nonce (1-8+ bytes)
 ```
-Based on the listings data, a listing can be requested from one of the hosts. Listings themselves can contain text and/or an image. To prevent DoS attacks against the hosts, they will request either a proof of work (hashcash) or proof of stake (proof of ownership of Bitcoins).
+
+The Sellers key will be used to lookup their trust-rating. The Title will be used to determine whether to ask the host for the listing information. The timestamp will be used to determine whether a listing has expired (listings must be re-added using a new PoW each week, but this will be done automatically by the client). Listing expiration prevents old listings from being up too long. The category byte is explained in the "Working as a Buyer" subsection of the "Client Operation" section below. The signature is used to verify that the listing belongs to the Seller in question and the nonce is, once again, used in the proof of work.
+
+Based on the listings data, a listing can be requested from one of the hosts. Listings themselves can contain text and/or an image. To prevent DoS attacks against the hosts, they will request either a proof of work (hashcash) (V0.1) or proof of stake (proof of ownership of Bitcoins) (V0.2).
 
 ### Hosting
-A host is someone who decides to host listings for the network (and after V0.2 possibly do static web hosting). They are paid for their services by merchants, meaning the merchants are customers for hostings and the hosts are merchants who sell hosting.
+A host is someone who decides to host listings for the network (and in V0.2 possibly do static web hosting). They are paid for their services by merchants, meaning the merchants are customers for hostings and the hosts are merchants who sell hosting.
 
-A "proof of data transfer" is impossible without risking a sybil attack. This means it is up to the merchant to audit them and notify the mediators if they are cheating or not providing sufficient service.
+A "proof of data transfer" is impossible without risking a sybil attack. This means it is up to the merchant to verify the hosts are hosting them and notify the mediators if they are cheating or not providing sufficient service.
 
 For V0.1, broadcasters will send directly to those that request data. In a future version, the data will be routed through a circuit formed in the network. The hosts will broadcast a connection information message which will be IP based for V0.1:
 ```
-Hosts ECDSA KEY (32 bytes), IPv6:Port (18 bytes), Signature (72 bytes)
+Hosts ECDSA KEY (32 bytes), IPv6 Address:Port (18 bytes), Timestamp (8 bytes), Signature (72 bytes), Nonce (1-8+ bytes)
 ```
 
-The hosts will also broadcast a message with the listings associated with their ECDSA key so users can know to connect to them when they have a listing they want to view.
+The hosts will also brroadcast a message with the listings associated with their ECDSA key so users can know to connect to them when they have a listing they want to view:
+```
+Hosts ECDSA KEY (32 bytes), Listing ID (?? bytes), Timestamp (8 bytes), Signature (72 bytes), Nonce (1-8+ bytes)
+```
+
+Like in the other objects, the timestamps are used for revoking and updating.
 
 ### Private Messaging
 For V0.1, the client will simply give you someones Bitmessage address based on a public key you enter.
@@ -167,6 +180,12 @@ Proof of work is not ideal because those running specialized hardware (or even G
 
 Proof of Stake requires users run a Bitcoin client (an SPV client works though).
 
+### Static Web Hosting
+
+It is possible to have the mediators verify web hosting as well. The contract involves the mediator downloading the file at pre-determined times and verifying that the hash of the file is the same as it was originally.
+
+This is both useful and easy to integrate.
+
 ### To be continued
 
 Possible Future Features
@@ -193,3 +212,5 @@ Is soft-distributing all these listings and ratings a good idea? Should they be 
 What is a better name for this?
 
 Possible way to make revokations more space effecient
+
+Determine the most space-effecient and safe way to have listing IDs referenced in the hosts "advertisment".

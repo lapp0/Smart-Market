@@ -222,7 +222,7 @@ These features may not be necessary or possible and will be marked as such.
 
 ### Message Splitting Scaling Scheme
 
-As mentioned above, to scale, this program will need to split the messages. This must be done carefully because 
+As mentioned above, to scale, this program will need to split the messages. This must be done carefully because there are incentives for some users to jam the network.
 
 ### To be continued
 

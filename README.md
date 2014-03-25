@@ -41,9 +41,18 @@ The distributed WoT will have both private and public ratings. Private ratings o
 
 The trust ratings size will be minimal, following the format:
 ```
-Rated user key (32 bytes), Rating user key (32 bytes), Rating (2 byte),
+Rated user key (32 bytes), Rating user key (32 bytes), Rating (4 bytes),
 Timestamp (8 bytes), Signature (72 bytes), Nonce (1-8+ bytes)
 ```
+
+Rating structure:
+
+| Rating Score | Amount Risked | Comment |
+|--------------|---------------|---------|
+| Value from -7 to 8 | represents many numbers from 0 to 10^15 satoshi | comment code clarifying what happened|
+| 4 bits | 12 bits | 2 bytes |
+| 0000=-7, 0001=-6... 1111=8 | Undefined implementation | 0x0000 = "smooth trade", 0x0001 = "ran off with money"...|
+
 Each rating will be a little over 100bytes. At a rate of 7 ratings per kb, there can be "only" 7 million ratings per GB. This doesn't scale to the trade volume of major auctioning and sales websites. Completely distributed ratings (everyone having a full copy) are fine for V0.1, but eventually there will have to be a more scalable model that doesn't require every running client have a full copy.
 
 There will be a default heuristic for getting a users trust based on your trust ratings, but it will be changeable. For example, some users might place a lot of trust in the ratings of those they trust, while others may think trust is less transitive. Users having different heuristics brings up issues with finding mutually agreeable mediators (you don't know who they trust), but there are many solutions. Assuming everyone has the same heuristic is sufficient for V0.1 though.
@@ -210,7 +219,7 @@ Expiration Timestamp (8 bytes), Risked BTC (7 bytes), Merchant Signature (72 byt
 
 Not broadcasting throw-away value message:
 ```
-Merchant Key (32 bytes), "Not Broadcasting Byte" (1 byte), Merchant Signature (72 bytes), Nonce (1-8+ bytes)
+Merchant Key (32 bytes), "Not Broadcasting" Byte (1 byte), Merchant Signature (72 bytes), Nonce (1-8+ bytes)
 ```
 
 ### To be continued
